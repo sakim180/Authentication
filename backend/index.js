@@ -10,11 +10,14 @@ const app=express()
  const PORT=process.env.PORT || 8000
 connectdb();
  app.use(express.json())
- app.use(cors({credentials:true}))
+ app.use(cors({
+    origin: 'http://localhost:5173', // explicitly allow your frontend origin
+    credentials: true // allow cookies and credentials
+  }));
  app.use(cookieParser())
 
 app.use('/api/auth',userAuthRouter)
-app.use('/api/',userRouter)
+app.use('/api/user',userRouter)
 
 
 app.listen(PORT,()=>{

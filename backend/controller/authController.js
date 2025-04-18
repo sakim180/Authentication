@@ -6,6 +6,7 @@ import transporter from '../config/nodemailer.js';
 export const register=async(req,res)=>{
    
     const {name,email,password}=req.body;
+    console.log(password)
    
     
     if(!name || !email || !password){
@@ -315,6 +316,7 @@ export const verifyEmail=async(req,res)=>{
  }
  export const isAuthenticated=(req,res)=>{
     try{
+        
         res.json({success:true,message:"User is Authenticated"})
     }
     catch(err){
