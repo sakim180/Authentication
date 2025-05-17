@@ -4,7 +4,7 @@ import express from 'express'
  import cookieParser from 'cookie-parser'
  import connectdb from './config/mongodb.js'
  import userAuthRouter from './routes/userAuthRoutes.js'
-import userRouter from './routes/userroutes.js'
+import userrouter from './routes/userRoutes.js'
 
 const app=express()
  const PORT=process.env.PORT || 8000
@@ -17,7 +17,7 @@ connectdb();
  app.use(cookieParser())
 
 app.use('/api/auth',userAuthRouter)
-app.use('/api/user',userRouter)
+app.use('/api/user',userrouter)
 
 
 app.listen(PORT,()=>{
