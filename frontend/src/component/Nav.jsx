@@ -5,21 +5,39 @@ import AppContext from '../context/AppContext.jsx'
 
 const Nav = () => {
   const navigate= useNavigate()
-  const { userData,isLogedin}=useContext(AppContext)
-  console.log(userData)
+  const { userData,isLogedin,logout,sendOtp}=useContext(AppContext)
+ const  otphandaler=async()=>{
+  await sendOtp()
+  navigate("/email-verify")
+
+
+
+ }
   
   return (
     <div className='w-full items-center flex justify-between p-4 sm:p-6  absolute top-0'>
         <img src={assets.logo} alt="" className='sm:w-32 w-28' />
-        {isLogedin?
+        {userData?
         <div className='flex justify-center items-center rounded-full bg-black text-slate-100 h-8 w-8 relative group'>
           {userData.name[0].toUpperCase()}
-          <div className=' hidden absolute top-0 pt-10 right-0 group-hover:block  z-10'>
-             <ul className=' bg-gray-100 list-none m-0 p-2 text-sm text-black '>
-              <li className='flex flex-shrink-0 py-1 px-2 hover:bg-gray-200 cursor-pointer  '>Verify Email</li>
-              <li className='py-1 px-2 hover:bg-gray-200 cursor-pointer'>Log Out</li>
-             </ul>
-          </div>
+          <div className="relative group">
+          <div className="relative group">
+  <div className="hidden absolute top-full right-0 mt-2 w-28 group-hover:block z-20 transition-all duration-200">
+    <ul className="bg-white rounded-md shadow-lg ring-1 ring-gray-200 text-sm text-gray-700">
+      {userData.isAccountVerify ?"": <li onClick={()=>{otphandaler()}} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors duration-150">
+        
+        Verify Email
+      </li>}
+     
+      <li onClick={()=>logout()} className="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors duration-150">
+        Log Out
+      </li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
         </div>
      
         :
