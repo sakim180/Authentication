@@ -6,7 +6,7 @@ import transporter from '../config/nodemailer.js';
 export const register=async(req,res)=>{
    
     const {name,email,password}=req.body;
-    console.log(password)
+    
    
     
     if(!name || !email || !password){
@@ -94,30 +94,30 @@ catch(err){
 
 
 export const logout=async(req,res)=>{
-    try{
-      res.clearCookie('token',{
-        httpOnly:true,
-        secure:process.env.NODE_ENV ==='production',
-        sameSite:process.env.NODE_ENV === 'production'?'none':'strict',
-        
-
-      })
-
-      return res.json({success:true,message:'Log Out'})
-
-
-    }
-    catch(err){
-
-        res.json({success:false,message:err.message})
-
-
-    }
+    
+    try {
+        res.clearCookie('token', {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+        });
+    
+        return res.status(200).json({
+          success: true,
+          message: 'Logged out successfully',
+        });
+      } catch (err) {
+        return res.status(500).json({
+          success: false,
+          message: err.message || 'Server error during logout',
+        });
+      }
 
 }
 
 
 export const sendVerifyOtp=async(req,res)=>{
+   
     try{
         const {userId}=req.body
         const user= await usermodel.findById(userId)
@@ -153,6 +153,7 @@ export const sendVerifyOtp=async(req,res)=>{
 
 export const verifyEmail=async(req,res)=>{
     const {userId,otp}=req.body
+    
    
     if(!userId || !otp){
        return res.json({success:false,message:'Missing Details'})
@@ -250,11 +251,12 @@ export const verifyEmail=async(req,res)=>{
  }
 
 
- export const matchOtp=async(req,res)=>{
-    const {otp,email,password}=req.body
+ export const forgotOtpMatch=async(req,res)=>{
+    
+    const {otp,email,newPassword}=req.body
     
     
-    if(!otp || !email|| !password){
+    if(!otp || !email|| !newPassword){
         return  res.json({success:false,message:"Something Went Wrong!"})
 
     }
@@ -281,7 +283,7 @@ export const verifyEmail=async(req,res)=>{
         }
         
         
-        const haseedPassword=await bcrypt.hash(password,10);
+        const haseedPassword=await bcrypt.hash(newPassword,10);
         
         user.password=haseedPassword;
         user.verifyOtp='';
