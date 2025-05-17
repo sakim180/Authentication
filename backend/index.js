@@ -1,26 +1,43 @@
-import express from 'express'
- import cors from 'cors'
- import 'dotenv/config'
- import cookieParser from 'cookie-parser'
- import connectdb from './config/mongodb.js'
- import userAuthRouter from './routes/userAuthRoutes.js'
-import userrouter from './routes/userRoutes.js'
+import express from 'express';
+import cors from 'cors';
+import 'dotenv/config';
+import cookieParser from 'cookie-parser';
+import connectdb from './config/mongodb.js';
+import userAuthRouter from './routes/userAuthRoutes.js';
+import userrouter from './routes/userRoutes.js';
 
-const app=express()
- const PORT=process.env.PORT || 8000
+const app = express();
+const PORT = process.env.PORT || 8000;
+
+// Connect to database
 connectdb();
- app.use(express.json())
- app.use(cors({
-    origin: 'http://localhost:5173', // explicitly allow your frontend origin
-    credentials: true // allow cookies and credentials
-  }));
- app.use(cookieParser())
 
-app.use('/api/auth',userAuthRouter)
-app.use('/api/user',userrouter)
+// Middleware
+app.use(express.json());
+app.use(cookieParser());
 
+// ✅ Allow both local and deployed frontend origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://authentication-murex-seven.vercel.app'
+];
 
-app.listen(PORT,()=>{
-    console.log(`server running on :${PORT}`)
-})
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 
+// Routes
+app.use('/api/auth', userAuthRouter);
+app.use('/api/user', userrouter);
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
