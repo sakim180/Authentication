@@ -10,44 +10,44 @@ const Login = () => {
   const [loader, setLoader] = useState(false);
   const { setIsLogedin, backendUrl, getUserData } = useContext(AppContext);
 
-  const [state, setState] = useState("log-in");
+  const [state, setState] = useState("sign-in"); // fixed: match logic
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const dataHandler = async (e) => {
     e.preventDefault();
+    setLoader(true);
     axios.defaults.withCredentials = true;
 
     try {
-      setLoader(true);
-
       if (state === "sign-up") {
-        const response = await axios.post(`${backendUrl}/api/auth/register`, {
-          name,
-          email,
-          password,
-        });
+        const { data } = await axios.post(
+          `${backendUrl}/api/auth/register`,
+          { name, email, password },
+          { withCredentials: true }
+        );
 
         setLoader(false);
 
-        if (response.data.success) {
+        if (data.success) {
           swal("Success", "Account created! Please log in.", "success");
           setState("sign-in");
         } else {
-          swal("Error", response.data.message || "Registration failed.", "error");
+          swal("Error", data.message || "Registration failed.", "error");
         }
       } else {
-        const { data } = await axios.post(`${backendUrl}/api/auth/login`, {
-          email,
-          password,
-        });
+        const { data } = await axios.post(
+          `${backendUrl}/api/auth/login`,
+          { email, password },
+          { withCredentials: true }
+        );
 
         setLoader(false);
 
         if (data.success) {
           setIsLogedin("true");
-          getUserData();
+          await getUserData(); // optional await if it's async
           navigate("/");
           swal("Welcome!", "You are now logged in.", "success");
         } else {
@@ -56,7 +56,9 @@ const Login = () => {
       }
     } catch (err) {
       setLoader(false);
-      swal("Error", err.response?.data?.message || "Something went wrong.", "error");
+      const message =
+        err.response?.data?.message || err.message || "Something went wrong.";
+      swal("Error", message, "error");
     }
   };
 
@@ -121,9 +123,17 @@ const Login = () => {
                 />
               </div>
 
-              <p  className="text-violet-800 text-sm text-right cursor-pointer" onClick={()=>{navigate('/forgot-pass')}}>Forgot password?</p>
+              <p
+                className="text-violet-800 text-sm text-right cursor-pointer"
+                onClick={() => navigate("/forgot-pass")}
+              >
+                Forgot password?
+              </p>
 
-              <button type="submit" className="bg-blue-500 text-white px-3 rounded-md py-2.5 hover:bg-blue-600 transition">
+              <button
+                type="submit"
+                className="bg-blue-500 text-white px-3 rounded-md py-2.5 hover:bg-blue-600 transition"
+              >
                 {state === "sign-up" ? "Sign Up" : "Sign In"}
               </button>
 
